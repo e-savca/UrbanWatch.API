@@ -1,4 +1,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+
+# link to repo
+LABEL org.opencontainers.image.source https://github.com/e-savca/UrbanWatch.API
+
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
