@@ -6,7 +6,8 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = 'UrbanWatch.API'
+        REPO = 'UrbanWatch.API'
+        IMAGE_NAME = 'urbanwatchapi'
         IMAGE_TAG = 'latest'
     }
 
@@ -29,7 +30,7 @@ pipeline {
                     )
                 ]) {
                     script {
-                        def ghcrImage = "ghcr.io/${GHCR_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
+                        def ghcrImage = "ghcr.io/${GHCR_USER}/${REPO}/${IMAGE_NAME}:${IMAGE_TAG}"
 
                         sh """
                             echo "$GHCR_PASS" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
