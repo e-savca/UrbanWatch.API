@@ -1,45 +1,52 @@
 pipeline {
     agent any
+
     triggers {
         pollSCM '* * * * *'
     }
+
+    environment {
+        IMAGE_NAME = 'UrbanWatch.API'
+        IMAGE_TAG = 'latest'
+    }
+
     stages {
-        stage('Restore') {
+        stage('Docker Build') {
             steps {
-                sh '''
-                cd vssln
-                dotnet restore
-                '''
+                script {
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                }
             }
         }
-        stage('Build') {
+
+        stage('Docker Push') {
             steps {
-                sh '''
-                cd vssln
-                dotnet build --configuration Release
-                '''
-            }
-        }
-        stage('Publish') {
-            steps {
-                sh '''
-                cd vssln
-                dotnet publish --configuration Release --output ../publish
-                '''
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'github-personal-account',
+                        usernameVariable: 'GHCR_USER',
+                        passwordVariable: 'GHCR_PASS'
+                    )
+                ]) {
+                    script {
+                        def ghcrImage = "ghcr.io/${GHCR_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
+
+                        sh """
+                            echo "$GHCR_PASS" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+                            docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ghcrImage}
+                            docker push ${ghcrImage}
+                        """
+                    }
+                }
             }
         }
     }
+
     post {
         always {
             script {
-                def publishDir = 'publish'
-                sh "ls -l ${publishDir}" // Debugging: Check if files exist
+                sh 'docker images'
             }
-
-            // Archive the correct publish directory
-            archiveArtifacts artifacts: 'publish/**', allowEmptyArchive: true
-
-            // Clean up workspace after archiving
             cleanWs()
         }
     }
