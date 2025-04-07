@@ -1,4 +1,5 @@
 # Custom settings
+vssln/.idea/*
 
 
 ## Ignore Visual Studio temporary files, build results, and
@@ -401,3 +402,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+vssln/.idea/.idea.UrbanWatchAPI/.idea/vcs.xml
