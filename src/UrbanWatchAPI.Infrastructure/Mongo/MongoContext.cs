@@ -16,5 +16,5 @@ public class MongoContext
         _database = client.GetDatabase(settings.Database);
     }
     public IMongoCollection<VehicleSnapshotDocument> VehicleHistory =>
-        _database.GetCollection<VehicleSnapshotDocument>("vehicle_history");
+        _database.GetCollection<VehicleSnapshotDocument>("vehicles_live");
 }
