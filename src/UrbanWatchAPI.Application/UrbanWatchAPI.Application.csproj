@@ -7,7 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="MediatR" Version="12.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UrbanWatchAPI.Domain\UrbanWatchAPI.Domain.csproj" />
+    <ProjectReference Include="..\UrbanWatchAPI.Infrastructure\UrbanWatchAPI.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="PublicTransport\Routes\Commands\" />
+    <Folder Include="PublicTransport\Routes\Validators\" />
   </ItemGroup>
 
 </Project>

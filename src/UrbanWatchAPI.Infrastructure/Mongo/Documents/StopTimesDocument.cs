@@ -1,9 +1,10 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using UrbanWatchAPI.Infrastructure.Interfaces;
 
 namespace UrbanWatchAPI.Infrastructure.Mongo.Documents;
 
-public class StopTimesDocument
+public class StopTimesDocument : IDocument
 {
     [BsonId]
     [BsonRepresentation(BsonType.String)]

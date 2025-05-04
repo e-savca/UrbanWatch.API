@@ -1,9 +1,10 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using UrbanWatchAPI.Infrastructure.Interfaces;
 
 namespace UrbanWatchAPI.Infrastructure.Mongo.Documents;
 
-public class VehicleSnapshotDocument
+public class VehicleSnapshotDocument : IDocument
 {
     [BsonId]
     [BsonRepresentation(BsonType.String)]

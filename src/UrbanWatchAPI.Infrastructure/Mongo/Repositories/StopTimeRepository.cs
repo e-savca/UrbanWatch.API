@@ -4,9 +4,7 @@ using UrbanWatchAPI.Infrastructure.Mongo.Documents;
 
 namespace UrbanWatchAPI.Infrastructure.Mongo.Repositories;
 
-public class VehicleSnapshotRepository(MongoContext mongoContext)
+public class StopTimeRepository(MongoContext mongoContext)
 {
-    private readonly IMongoCollection<VehicleSnapshotDocument> _collection = mongoContext.VehicleHistory;
-    
-    
+    private readonly IMongoCollection<StopTimesDocument> _collection = mongoContext.StopTimes;
 }

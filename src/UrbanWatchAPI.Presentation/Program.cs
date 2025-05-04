@@ -1,11 +1,14 @@
 using UrbanWatchAPI.Infrastructure.Mongo;
+using UrbanWatchAPI.Application.PublicTransport.Routes.Mapping;
+using UrbanWatchAPI.Application.PublicTransport.Routes.Queries.GetAllRoutes;
 using UrbanWatchAPI.Infrastructure.Mongo.Documents;
 using UrbanWatchAPI.Infrastructure.Mongo.Repositories;
-using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.UseUrls("http://0.0.0.0:5020");
+
+#region Infrastructure
 
 // Bind env vars to config class
 builder.Services.Configure<MongoSettings>(
@@ -14,8 +17,30 @@ builder.Services.Configure<MongoSettings>(
 // Register MongoContext as a singleton
 builder.Services.AddSingleton<MongoContext>();
 
-// Add custom services to DI Container
-builder.Services.AddSingleton<VehicleSnapshotRepository>();
+// Add repositories
+builder.Services.AddSingleton<RouteRepository>();
+builder.Services.AddSingleton<ShapeRepository>();
+builder.Services.AddSingleton<StopRepository>();
+builder.Services.AddSingleton<StopTimeRepository>();
+builder.Services.AddSingleton<TripRepository>();
+// builder.Services.AddSingleton<VehicleSnapshotRepository>();
+
+#endregion
+
+#region Application 
+
+// Add MediatR
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(GetAllRoutesQuery).Assembly);
+});
+
+// Add AutoMapper
+builder.Services.AddAutoMapper(typeof(RoutesMappingProfile).Assembly);
+
+#endregion
+
+#region Presentation
 
 builder.Services.AddControllers();
 
@@ -23,6 +48,8 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+#endregion
 
 var app = builder.Build();
 
