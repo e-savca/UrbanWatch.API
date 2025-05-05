@@ -3,8 +3,21 @@ using UrbanWatchAPI.Application.PublicTransport.Routes.Mapping;
 using UrbanWatchAPI.Application.PublicTransport.Routes.Queries.GetAllRoutes;
 using UrbanWatchAPI.Infrastructure.Mongo.Documents;
 using UrbanWatchAPI.Infrastructure.Mongo.Repositories;
+using UrbanWatchAPI.Presentation.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+
+#region Pull secrets from Infisical
+
+builder.Configuration.AddInfisical(
+    token:       builder.Configuration["INFISICAL_TOKEN"] ?? throw new InvalidOperationException("INFISICAL_TOKEN missing"),
+    workspaceId: builder.Configuration["INFISICAL_WORKSPACE_ID"] ?? throw new InvalidOperationException("INFISICAL_WORKSPACE_ID missing"),
+    environment: builder.Configuration["INFISICAL_ENVIRONMENT"] ?? "prod",
+    folder:      "/",
+    baseUrl:     builder.Configuration["INFISICAL_URL"] ?? "http://vault.home"
+);
+
+#endregion
 
 builder.WebHost.UseUrls("http://0.0.0.0:5020");
 
