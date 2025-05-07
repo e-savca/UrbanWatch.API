@@ -1,8 +1,8 @@
 using UrbanWatchAPI.Infrastructure.Mongo;
 using UrbanWatchAPI.Application.PublicTransport.Routes.Mapping;
 using UrbanWatchAPI.Application.PublicTransport.Routes.Queries.GetAllRoutes;
-using UrbanWatchAPI.Infrastructure.Mongo.Documents;
 using UrbanWatchAPI.Infrastructure.Mongo.Repositories;
+using UrbanWatchAPI.Infrastructure.Redis;
 using UrbanWatchAPI.Presentation.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,12 +23,21 @@ builder.WebHost.UseUrls("http://0.0.0.0:5020");
 
 #region Infrastructure
 
-// Bind env vars to config class
-builder.Services.Configure<MongoSettings>(
-    builder.Configuration.GetSection("Mongo"));
+// bind env vars for MongoSetting
+builder.Services.Configure<MongoSettings>(options =>
+{
+    options.Host     = builder.Configuration["MONGO_HOST"]     ?? throw new Exception("MONGO_HOST missing");
+    options.Port     = int.Parse(builder.Configuration["MONGO_PORT"] ?? "0");
+    options.Database = builder.Configuration["MONGO_DATABASE"] ?? throw new Exception("MONGO_DATABASE missing");
+    options.Username = builder.Configuration["MONGO_USERNAME"] ?? throw new Exception("MONGO_USERNAME missing");
+    options.Password = builder.Configuration["MONGO_PASSWORD"] ?? throw new Exception("MONGO_PASSWORD missing");
+});
 
-// Register MongoContext as a singleton
+// Register MongoContext
 builder.Services.AddSingleton<MongoContext>();
+
+// Register RedisContext
+builder.Services.AddSingleton<RedisContext>();
 
 // Add repositories
 builder.Services.AddSingleton<RouteRepository>();
