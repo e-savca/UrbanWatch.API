@@ -20,6 +20,7 @@
         "INFISICAL_TOKEN": "",
         "INFISICAL_WORKSPACE_ID": "",
         "INFISICAL_ENVIRONMENT": "dev",
+        "INFISICAL_TAG": "api",
         "INFISICAL_URL": "http://vault.home"
       }
     },

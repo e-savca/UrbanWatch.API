@@ -1,3 +1,4 @@
+using AutoMapper;
 using UrbanWatchAPI.Infrastructure.Mongo;
 using UrbanWatchAPI.Application.PublicTransport.Routes.Mapping;
 using UrbanWatchAPI.Application.PublicTransport.Routes.Queries.GetAllRoutes;
@@ -13,7 +14,7 @@ builder.Configuration.AddInfisical(
     token:       builder.Configuration["INFISICAL_TOKEN"] ?? throw new InvalidOperationException("INFISICAL_TOKEN missing"),
     workspaceId: builder.Configuration["INFISICAL_WORKSPACE_ID"] ?? throw new InvalidOperationException("INFISICAL_WORKSPACE_ID missing"),
     environment: builder.Configuration["INFISICAL_ENVIRONMENT"] ?? "prod",
-    folder:      "/",
+    tag: builder.Configuration["INFISICAL_TAG"] ?? throw new InvalidOperationException("INFISICAL_TAG missing"),
     baseUrl:     builder.Configuration["INFISICAL_URL"] ?? "http://vault.home"
 );
 
@@ -45,7 +46,7 @@ builder.Services.AddSingleton<ShapeRepository>();
 builder.Services.AddSingleton<StopRepository>();
 builder.Services.AddSingleton<StopTimeRepository>();
 builder.Services.AddSingleton<TripRepository>();
-// builder.Services.AddSingleton<VehicleSnapshotRepository>();
+builder.Services.AddSingleton<VehicleSnapshotRepository>();
 
 #endregion
 

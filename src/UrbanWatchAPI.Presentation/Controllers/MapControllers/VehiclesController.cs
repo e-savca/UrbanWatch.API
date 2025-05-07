@@ -9,7 +9,8 @@ namespace UrbanWatchAPI.Presentation.Controllers.MapControllers;
 [Tags("Map Controllers")]
 [Route("map/[controller]")]
 public class VehiclesController(
-    IMediator mediator
+    IMediator mediator,
+    ILogger<VehiclesController> logger
     ) : ControllerBase
 {
     [HttpGet]
@@ -19,15 +20,23 @@ public class VehiclesController(
     }
 
     [HttpPost]
-    public IActionResult Post([FromBody] VehicleSnapshotDto vehicles)
+    public async Task<IActionResult> Post([FromBody] VehicleSnapshotDto vehicles)
     {
         var importCommand = new ImportVehiclesCommand()
         {
             Snapshot = vehicles
         };
         
-        var result = mediator.Send(importCommand);
-        
-        return NoContent();
+        try
+        {
+            await mediator.Send(importCommand);
+
+            return Created();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e.Message);
+            return StatusCode(500);
+        }
     }
 }
