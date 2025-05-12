@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using UrbanWatchAPI.Application.PublicTransport.Vehicles.DTOs;
 using UrbanWatchAPI.Infrastructure.Mongo.Documents;
 using UrbanWatchAPI.Infrastructure.Mongo.Repositories;
@@ -13,7 +14,8 @@ public class ImportVehiclesCommand : IRequest<Guid>
 
 public class ImportVehiclesCommandHandler(
     IMapper mapper,
-    VehicleSnapshotRepository vehicleSnapshotRepository
+    VehicleSnapshotRepository vehicleSnapshotRepository,
+    ILogger<ImportVehiclesCommandHandler> logger
     ) : IRequestHandler<ImportVehiclesCommand, Guid>
 {
     public async Task<Guid> Handle(ImportVehiclesCommand request, CancellationToken cancellationToken)
@@ -27,7 +29,7 @@ public class ImportVehiclesCommandHandler(
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e.Message);
             throw;
         }
     }

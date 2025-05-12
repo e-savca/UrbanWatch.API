@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using UrbanWatchAPI.Application.PublicTransport.Vehicles.Commands;
 using UrbanWatchAPI.Application.PublicTransport.Vehicles.DTOs;
+using UrbanWatchAPI.Application.PublicTransport.Vehicles.Queries;
 
 namespace UrbanWatchAPI.Presentation.Controllers.MapControllers;
 
@@ -11,12 +12,23 @@ namespace UrbanWatchAPI.Presentation.Controllers.MapControllers;
 public class VehiclesController(
     IMediator mediator,
     ILogger<VehiclesController> logger
-    ) : ControllerBase
+) : ControllerBase
 {
     [HttpGet]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
-        return Ok();
+        var getVehiclesLastSnapshot = new GetVehiclesLastSnapshotQuery();
+
+        try
+        {
+            var result = await mediator.Send(getVehiclesLastSnapshot);
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e.Message);
+            return StatusCode(500);
+        }
     }
 
     [HttpPost]
@@ -26,7 +38,7 @@ public class VehiclesController(
         {
             Snapshot = vehicles
         };
-        
+
         try
         {
             await mediator.Send(importCommand);
@@ -36,6 +48,31 @@ public class VehiclesController(
         catch (Exception e)
         {
             logger.LogError(e.Message);
+            return StatusCode(500);
+        }
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete([FromQuery] long ticks)
+    {
+        var timespan = TimeSpan.FromTicks(ticks);
+
+        var deleteCommand = new DeleteVehiclesCommand
+        {
+            TimeSpan = timespan
+        };
+
+        try
+        {
+            var result = await mediator.Send(deleteCommand);
+            if (result > 0)
+                return new JsonResult(new { success = true, deletedCount = result });
+            
+            return new JsonResult(new { success = false});
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to delete vehicles older than the given timespan.");
             return StatusCode(500);
         }
     }
