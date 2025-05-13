@@ -1,21 +1,24 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using UrbanWatchAPI.Application.PublicTransport.Routes.Commands;
+using UrbanWatchAPI.Application.PublicTransport.Routes.DTOs;
 using UrbanWatchAPI.Application.PublicTransport.Routes.Queries.GetAllRoutes;
-using Route = UrbanWatchAPI.Domain.Entities.PublicTransportEntities.Route;
 
 namespace UrbanWatchAPI.Presentation.Controllers.MapControllers;
 
 [ApiController]
 [Tags("Map Controllers")]
 [Route("map/[controller]")]
-public class RoutesController(IMediator mediator) : ControllerBase
+public class RoutesController(
+    IMediator mediator,
+    ILogger<RoutesController> logger) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAllRoutes()
     {
         var query = new GetAllRoutesQuery();
         var routes = await mediator.Send(query);
-        
+
         // TODO: return list of routes from MongoDB
         return Ok(new
         {
@@ -31,14 +34,26 @@ public class RoutesController(IMediator mediator) : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdateRoutes([FromBody] List<Route> routes)
+    public async Task<IActionResult> UpdateRoutes([FromBody] List<RouteDTO> routes)
     {
         if (routes == null || routes.Count == 0)
             return BadRequest("Routes list cannot be empty.");
 
-        // TODO: actualizează toate rutele în MongoDB
-        // ex: await _routesService.ReplaceAllRoutesAsync(routes);
+        var importCommand = new ImportRoutesCommand()
+        {
+            Routes = routes
+        };
 
-        return NoContent(); // 204 - succes, fără răspuns în body
+
+        try
+        {
+            var result = await mediator.Send(importCommand);
+            return Ok(new { status = "success" });
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e.Message);
+            throw;
+        }
     }
 }
